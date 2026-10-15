@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -135,9 +136,18 @@ public class FASTAReader {
 	 * pattern when one has been found to be different.
 	 */
 	private boolean compareImproved(byte[] pattern, int position) throws FASTAException {
-		// TODO
-		return false;
+		if (position + pattern.length > validBytes) {
+			throw new FASTAException("Pattern goes beyond the end of the file.");
+		}
+		for (int i = 0; i < pattern.length; i++) {
+			if (pattern[i] != content[position + i]) {
+				return false;
+			}
+		}
+		return true;
 	}
+		
+	
 
 	/*
 	 * Improved version of the compare method that returns the number of bytes in
@@ -148,9 +158,20 @@ public class FASTAReader {
 	 * ones present in the indicated position.
 	 */
 	private int compareNumErrors(byte[] pattern, int position) throws FASTAException {
-		// TODO
-		return -1;
+		if (position + pattern.length > validBytes) {
+			throw new FASTAException("Pattern goes beyond the end of the file.");
+		}
+		int error=0;
+		for (int i = 0; i < pattern.length; i++) {
+			if (pattern[i] != content[position + i]) {
+				error ++;
+			}
+		}
+		return error;
 	}
+		
+		
+	
 
 	/**
 	 * Implements a linear search to look for the provided pattern in the data
@@ -162,9 +183,22 @@ public class FASTAReader {
 	 *         pattern in the data.
 	 */
 	public List<Integer> search(byte[] pattern) {
-		// TODO
-		return null;
+		List<Integer> sol= new ArrayList<Integer>();
+		for(int i=0; i<validBytes;i++) {
+			try {//lanza excepciones
+				if (this.compareImproved(pattern,i)) {
+					sol.add(i);
+				}
+			
+		} catch(Exception e){
+			break;
 	}
+		
+}
+		
+return sol;
+}
+	
 
 	/**
 	 * Implements a linear search to look for the provided pattern in the data array
@@ -179,9 +213,23 @@ public class FASTAReader {
 	 *         pattern (with up to 1 errors) in the data.
 	 */
 	public List<Integer> searchSNV(byte[] pattern) {
-		// TODO
-		return null;
+		List<Integer> sol= new ArrayList<Integer>();
+		for(int i=0; i<validBytes;i++) {
+			try {//lanza excepciones
+				if (this.compareNumErrors(pattern,i)<=1 ) {
+					sol.add(i);
+				}
+			
+		} catch(Exception e){
+			break;
 	}
+		
+}
+		
+return sol;
+}
+		
+	
 
 	public static void main(String[] args) {
 		long t1 = System.nanoTime();
